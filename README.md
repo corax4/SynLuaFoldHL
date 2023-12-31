@@ -1,2 +1,2 @@
 # SynLuaFoldHL
-SynEdit syntax highlighter for Lazarus
+SynEdit Lua syntax highlighter for Lazarus
