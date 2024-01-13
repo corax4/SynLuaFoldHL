@@ -351,12 +351,38 @@ begin
             begin
                 if ACond.Cond = '' then
                     Result := ACond.Attri
-                else
+                else if ACond.Cond = ' ' then  // do not highlight members of tables
                 begin
+                    if FTokenPos <= 1 then  // start of line
+                        Result := ACond.Attri
+                    else
+                    if FLine[FTokenPos - 1] = '.' then // can be ..
+                    begin
+                        if FTokenPos > 2 then
+                            if FLine[FTokenPos - 2] = '.' then
+                                Result := ACond.Attri;
+                    end
+                    else
+                        if FLine[FTokenPos - 1] <> ':' then
+                            Result := ACond.Attri;
+                end
+                else
+                begin // some condition
                     len := length(ACond.Cond);
                     if len < FTokenPos then
                         if Copy(FLine, FTokenPos - len, len) = ACond.Cond then
-                            Result := ACond.Attri;
+                            if FTokenPos - len <= 1 then  // start of line
+                                Result := ACond.Attri
+                            else
+                            if SymTypes[FLine[FTokenPos - len - 1]] <> 2 then // full ID
+                                if FLine[FTokenPos - len - 1] = '.' then // can be ..
+                                begin
+                                    if FTokenPos - len > 2 then
+                                        if FLine[FTokenPos - len - 2] = '.' then
+                                            Result := ACond.Attri;
+                                end
+                                else
+                                    Result := ACond.Attri;
                 end;
             end;
         end;
@@ -396,58 +422,58 @@ end;
 procedure TSynLuaHL.InitKeyAttr;
 begin
     KeyAttriMap['and']      := PackACond(fKeyAttri, '');
-    KeyAttriMap['assert']   := PackACond(fFunctionAttri, '');
+    KeyAttriMap['assert']   := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['break']    := PackACond(fKeyAttri, '');
-    KeyAttriMap['collectgarbage']    := PackACond(fFunctionAttri, '');
+    KeyAttriMap['collectgarbage']    := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['do']       := PackACond(fKeyAttri, '');
-    KeyAttriMap['dofile']   := PackACond(fFunctionAttri, '');
+    KeyAttriMap['dofile']   := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['else']     := PackACond(fKeyAttri, '');
     KeyAttriMap['elseif']   := PackACond(fKeyAttri, '');
     KeyAttriMap['end']      := PackACond(fKeyAttri, '');
-    KeyAttriMap['error']    := PackACond(fFunctionAttri, '');
+    KeyAttriMap['error']    := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['false']    := PackACond(fKeyAttri, '');
     KeyAttriMap['for']      := PackACond(fKeyAttri, '');
     KeyAttriMap['function'] := PackACond(fKeyAttri, '');
     KeyAttriMap['goto']     := PackACond(fKeyAttri, '');
-    KeyAttriMap['getfenv']  := PackACond(fFunctionAttri, '');
-    KeyAttriMap['getmetatable'] := PackACond(fFunctionAttri, '');
+    KeyAttriMap['getfenv']  := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['getmetatable'] := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['if']       := PackACond(fKeyAttri, '');
     KeyAttriMap['in']       := PackACond(fKeyAttri, '');
-    KeyAttriMap['ipairs']   := PackACond(fFunctionAttri, '');
+    KeyAttriMap['ipairs']   := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['local']    := PackACond(fKeyAttri, '');
-    KeyAttriMap['load']     := PackACond(fFunctionAttri, '');
-    KeyAttriMap['loadfile'] := PackACond(fFunctionAttri, '');
-    KeyAttriMap['loadstring'] := PackACond(fFunctionAttri, '');
-    KeyAttriMap['module']   := PackACond(fFunctionAttri, '');
+    KeyAttriMap['load']     := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['loadfile'] := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['loadstring'] := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['module']   := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['nil']      := PackACond(fKeyAttri, '');
     KeyAttriMap['not']      := PackACond(fKeyAttri, '');
-    KeyAttriMap['next']     := PackACond(fFunctionAttri, '');
+    KeyAttriMap['next']     := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['or']       := PackACond(fKeyAttri, '');
-    KeyAttriMap['pairs']    := PackACond(fFunctionAttri, '');
-    KeyAttriMap['pcall']    := PackACond(fFunctionAttri, '');
-    KeyAttriMap['print']    := PackACond(fFunctionAttri, '');
+    KeyAttriMap['pairs']    := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['pcall']    := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['print']    := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['repeat']   := PackACond(fKeyAttri, '');
     KeyAttriMap['return']   := PackACond(fKeyAttri, '');
-    KeyAttriMap['rawequal'] := PackACond(fFunctionAttri, '');
-    KeyAttriMap['rawget']   := PackACond(fFunctionAttri, '');
-    KeyAttriMap['rawset']   := PackACond(fFunctionAttri, '');
-    KeyAttriMap['require']  := PackACond(fFunctionAttri, '');
-    KeyAttriMap['select']   := PackACond(fFunctionAttri, '');
-    KeyAttriMap['setfenv']  := PackACond(fFunctionAttri, '');
-    KeyAttriMap['setmetatable'] := PackACond(fFunctionAttri, '');
+    KeyAttriMap['rawequal'] := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['rawget']   := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['rawset']   := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['require']  := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['select']   := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['setfenv']  := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['setmetatable'] := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['then']     := PackACond(fKeyAttri, '');
     KeyAttriMap['true']     := PackACond(fKeyAttri, '');
-    KeyAttriMap['tonumber'] := PackACond(fFunctionAttri, '');
-    KeyAttriMap['tostring'] := PackACond(fFunctionAttri, '');
-    KeyAttriMap['type']     := PackACond(fFunctionAttri, '');
+    KeyAttriMap['tonumber'] := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['tostring'] := PackACond(fFunctionAttri, ' ');
+    KeyAttriMap['type']     := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['until']    := PackACond(fKeyAttri, '');
-    KeyAttriMap['unpack']   := PackACond(fFunctionAttri, '');
+    KeyAttriMap['unpack']   := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['while']    := PackACond(fKeyAttri, '');
-    KeyAttriMap['xpcall']   := PackACond(fFunctionAttri, '');
+    KeyAttriMap['xpcall']   := PackACond(fFunctionAttri, ' ');
 
     // ***** Libs *****
 
-    KeyAttriMap['coroutine'] := PackACond(fFunctionAttri, '');
+    KeyAttriMap['coroutine'] := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['create']    := PackACond(fFunctionAttri, 'coroutine.');
     KeyAttriMap['resume']    := PackACond(fFunctionAttri, 'coroutine.');
     KeyAttriMap['running']   := PackACond(fFunctionAttri, 'coroutine.');
@@ -455,7 +481,7 @@ begin
     KeyAttriMap['wrap']      := PackACond(fFunctionAttri, 'coroutine.');
     KeyAttriMap['yield']     := PackACond(fFunctionAttri, 'coroutine.');
 
-    KeyAttriMap['debug']     := PackACond(fFunctionAttri, '');
+    KeyAttriMap['debug']     := PackACond(fFunctionAttri, ' ');
     //KeyAttriMap['debug']   := PackACond(fFunctionAttri, 'debug.');
     //KeyAttriMap['getfenv'] := PackACond(fFunctionAttri, 'debug.');
     KeyAttriMap['gethook']   := PackACond(fFunctionAttri, 'debug.');
@@ -471,7 +497,7 @@ begin
     KeyAttriMap['setupvalue']  := PackACond(fFunctionAttri, 'debug.');
     KeyAttriMap['traceback']   := PackACond(fFunctionAttri, 'debug.');
 
-    KeyAttriMap['io']      := PackACond(fFunctionAttri, '');
+    KeyAttriMap['io']      := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['close']   := PackACond(fFunctionAttri, 'io.');
     KeyAttriMap['flush']   := PackACond(fFunctionAttri, 'io.');
     KeyAttriMap['input']   := PackACond(fFunctionAttri, 'io.');
@@ -487,7 +513,7 @@ begin
     //KeyAttriMap['type']  := PackACond(fFunctionAttri, 'io.');
     KeyAttriMap['write']   := PackACond(fFunctionAttri, 'io.');
 
-    KeyAttriMap['math']   := PackACond(fFunctionAttri, '');
+    KeyAttriMap['math']   := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['abs']    := PackACond(fFunctionAttri, 'math.');
     KeyAttriMap['acos']   := PackACond(fFunctionAttri, 'math.');
     KeyAttriMap['asin']   := PackACond(fFunctionAttri, 'math.');
@@ -526,13 +552,13 @@ begin
     KeyAttriMap['execute']   := PackACond(fFunctionAttri, 'os.');
     KeyAttriMap['exit']      := PackACond(fFunctionAttri, 'os.');
     KeyAttriMap['getenv']    := PackACond(fFunctionAttri, 'os.');
-    KeyAttriMap['remove']    := PackACond(fFunctionAttri, 'os.');
+    //KeyAttriMap['remove']    := PackACond(fFunctionAttri, 'os.');
     KeyAttriMap['rename']    := PackACond(fFunctionAttri, 'os.');
     KeyAttriMap['setlocale'] := PackACond(fFunctionAttri, 'os.');
     KeyAttriMap['time']      := PackACond(fFunctionAttri, 'os.');
     KeyAttriMap['tmpname']   := PackACond(fFunctionAttri, 'os.');
 
-    KeyAttriMap['package']   := PackACond(fFunctionAttri, '');
+    KeyAttriMap['package']   := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['cpath']     := PackACond(fFunctionAttri, 'package.');
     KeyAttriMap['loaded']    := PackACond(fFunctionAttri, 'package.');
     KeyAttriMap['loaders']   := PackACond(fFunctionAttri, 'package.');
@@ -541,7 +567,7 @@ begin
     KeyAttriMap['preload']   := PackACond(fFunctionAttri, 'package.');
     KeyAttriMap['seeall']    := PackACond(fFunctionAttri, 'package.');
 
-    KeyAttriMap['string']   := PackACond(fFunctionAttri, '');
+    KeyAttriMap['string']   := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['byte']     := PackACond(fFunctionAttri, 'string.');
     KeyAttriMap['char']     := PackACond(fFunctionAttri, 'string.');
     KeyAttriMap['dump']     := PackACond(fFunctionAttri, 'string.');
@@ -557,15 +583,15 @@ begin
     KeyAttriMap['sub']      := PackACond(fFunctionAttri, 'string.');
     KeyAttriMap['upper']    := PackACond(fFunctionAttri, 'string.');
 
-    KeyAttriMap['table']    := PackACond(fFunctionAttri, '');
+    KeyAttriMap['table']    := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['concat']   := PackACond(fFunctionAttri, 'table.');
     KeyAttriMap['insert']   := PackACond(fFunctionAttri, 'table.');
     KeyAttriMap['maxn']     := PackACond(fFunctionAttri, 'table.');
-    //KeyAttriMap['remove'] := PackACond(fFunctionAttri, 'table.');
+    KeyAttriMap['remove'] := PackACond(fFunctionAttri, 'table.');
     KeyAttriMap['sort']     := PackACond(fFunctionAttri, 'table.');
 
     // ***** LuaJIT *****
-    KeyAttriMap['ffi']      := PackACond(fFunctionAttri, '');
+    KeyAttriMap['ffi']      := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['cdef']     := PackACond(fFunctionAttri, 'ffi.');
     KeyAttriMap['C']        := PackACond(fFunctionAttri, 'ffi.');
     //KeyAttriMap['load']   := PackACond(fFunctionAttri, 'ffi.');
@@ -585,6 +611,7 @@ begin
     KeyAttriMap['abi']      := PackACond(fFunctionAttri, 'ffi.');
     KeyAttriMap['arch']     := PackACond(fFunctionAttri, 'ffi.');
 
+    KeyAttriMap['bit']     := PackACond(fFunctionAttri, ' ');
     KeyAttriMap['tobit']   := PackACond(fFunctionAttri, 'bit.');
     KeyAttriMap['tohex']   := PackACond(fFunctionAttri, 'bit.');
     KeyAttriMap['bnot']    := PackACond(fFunctionAttri, 'bit.');
